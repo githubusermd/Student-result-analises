@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Result Analises</title>
+  <style>
+    
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="flex">
+        <div>
+          <h1 class="title">🎓 Student Result Analyzer</h1>
+          <p class="subtitle">বাংলা গ্রেডিং স্কেলসহ GPA, র‍্যাঙ্ক, সাবজেক্ট অ্যানালাইসিস — এক ফাইলে!</p>
+        </div>
+        <div class="right flex no-print">
+          <button id="btn-export-csv" class="btn">Export CSV</button>
+          <button id="btn-print" class="btn brand">Print Report</button>
+          <button id="btn-reset" class="btn danger">Reset All</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="row">
+      <!-- Entry Form -->
+      <section class="card grid-2" id="entryCard">
+        <div class="flex">
+          <h2 class="title" style="font-size:22px;">➕ নতুন স্টুডেন্ট এন্ট্রি</h2>
+          <div class="right chips">
+            <span class="chip">A+ ≥ 80 → 5.00</span>
+            <span class="chip">A ≥ 70 → 4.00</span>
+            <span class="chip">A- ≥ 60 → 3.50</span>
+            <span class="chip">B ≥ 50 → 3.00</span>
+            <span class="chip">C ≥ 40 → 2.00</span>
+            <span class="chip">D ≥ 33 → 1.00</span>
+            <span class="chip">F &lt; 33 → 0.00</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="grid-2">
+            <label>স্টুডেন্ট নাম</label>
+            <input id="st-name" placeholder="উদাহরণ: মোঃ তারেক রহমান সিনহা" />
+          </div>
+          <div class="grid-2">
+            <label>রোল / আইডি</label>
+            <input id="st-id" placeholder="উদাহরণ: 211035" />
+          </div>
+          <div class="grid-2">
+            <label>সেমিস্টার</label>
+            <input id="st-sem" placeholder="উদাহরণ: 5th Semester" />
+          </div>
+          <div class="grid-2">
+            <label>সেশন</label>
+            <input id="st-sec" placeholder="উদাহরণ: B" />
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="flex">
+            <h3 style="margin:0 0 8px;font-size:18px;">📚 সাবজেক্ট ও নম্বর</h3>
+            <div class="right no-print">
+              <button id="btn-add-row" class="btn small">+ Add Subject</button>
+              <button id="btn-clear-rows" class="btn small ghost">Clear Subjects</button>
+            </div>
+          </div>
+
+          <div class="note" style="margin:6px 0 10px;">ক্রেডিট দিলে GPA weighted হবে, না দিলে সব সাবজেক্ট সমান ধরা হবে।</div>
+
+          <div style="overflow:auto;">
+            <table id="tbl-entry">
+              <thead>
+                <tr>
+                  <th style="width:36px;">#</th>
+                  <th>Subject</th>
+                  <th style="width:110px;">Marks (0-100)</th>
+                  <th style="width:110px;">Credit</th>
+                  <th style="width:120px;">Grade</th>
+                  <th style="width:120px;">Point</th>
+                  <th class="no-print" style="width:60px;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="entry-body"></tbody>
+            </table>
+          </div>
+
+          <div class="flex" style="margin-top:12px;">
+            <button id="btn-calc" class="btn brand">Calculate</button>
+            <button id="btn-save" class="btn" disabled>Save to Class</button>
+            <div class="right kpi">
+              <div class="item"><div class="h">Total Marks</div><div class="v" id="k-total">0</div></div>
+              <div class="item"><div class="h">Average</div><div class="v" id="k-avg">0.00</div></div>
+              <div class="item"><div class="h">GPA</div><div class="v" id="k-gpa">0.00</div></div>
+              <div class="item"><div class="h">Status</div><div class="v" id="k-status">—</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Class Dashboard -->
+      <section class="card grid-2" id="dashCard">
+        <div class="flex">
+          <h2 class="title" style="font-size:22px;"> ক্লাস ড্যাশবোর্ড</h2>
+          <div class="right flex no-print">
+            <input id="search" placeholder="Search name / roll" style="width:220px" />
+            <select id="sortBy">
+              <option value="rank">Sort: Rank</option>
+              <option value="gpa">Sort: GPA</option>
+              <option value="total">Sort: Total</option>
+              <option value="name">Sort: Name</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="kpi" style="margin:10px 0 12px;">
+          <div class="item"><div class="h">Students</div><div class="v" id="m-stu">0</div></div>
+          <div class="item"><div class="h">Class Avg GPA</div><div class="v" id="m-gpa">0.00</div></div>
+          <div class="item"><div class="h">Topper</div><div class="v" id="m-top">—</div></div>
+          <div class="item"><div class="h">Hardest Subject</div><div class="v" id="m-hard">—</div></div>
+        </div>
+
+        <div style="overflow:auto;">
+          <table id="tbl-class">
+            <thead>
+              <tr>
+                <th style="width:60px;">Rank</th>
+                <th>Name</th>
+                <th style="width:110px;">Roll</th>
+                <th style="width:100px;">GPA</th>
+                <th style="width:100px;">Total</th>
+                <th>Remarks</th>
+                <th class="no-print" style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="class-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Last Calculation Preview -->
+    <section class="card" id="reportCard" style="margin-top:18px;">
+      <h2 class="title" style="font-size:22px;">🧾 ক্যালকুলেশন প্রিভিউ</h2>
+      <div id="calc-preview" class="note">Calculate চাপলে এখানে স্টুডেন্টের বিস্তারিত রিপোর্ট দেখা যাবে…</div>
+    </section>
+
+    <div class="footer">© Student Result Analyzer — Vanilla HTML/CSS/JS • Made for Diploma Projects</div>
+  </main>
+
+  <script src="costom.js">
+    
+  </script>
+</body>
+</html>
